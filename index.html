@@ -520,6 +520,132 @@ body::after{
   position:fixed;inset:0;pointer-events:none;z-index:9999;
   background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);
 }
+
+/* ─── BOTTOM NAV (mobile) ─── */
+.bottom-nav{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--s1);
+  border-top:1px solid var(--b2);
+  z-index:200;
+  padding:0;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.bottom-nav-inner{
+  display:flex;
+  height:56px;
+}
+.bn-item{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:3px;cursor:pointer;
+  font-size:8px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--textd);transition:color .15s;
+  border:none;background:transparent;
+  font-family:var(--mono);
+  -webkit-tap-highlight-color:transparent;
+}
+.bn-item.active{color:var(--amber)}
+.bn-item:active{background:var(--s2)}
+.bn-icon{font-size:16px;line-height:1}
+
+/* ─── MOBILE TOPBAR ─── */
+@media(max-width:768px){
+  .tb-nav{display:none}
+  .tb-divider{display:none}
+  .tb-right{display:none}
+  .tb-logo-sub{display:none}
+  .topbar{height:48px;padding:0 12px}
+  .tb-logo-text{font-size:12px}
+  .sidebar{display:none}
+  .bottom-nav{display:block}
+  .content{padding-bottom:56px}
+  html,body{overflow:hidden;height:100%;height:-webkit-fill-available}
+
+  /* screen body */
+  .screen-body{padding:10px 12px}
+  .screen-hdr{padding:10px 12px}
+
+  /* steps — scrollable horizontal */
+  .steps{
+    padding:0 8px;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .steps::-webkit-scrollbar{display:none}
+  .step{padding:8px 10px;font-size:8px;gap:5px}
+  .step-n{width:14px;height:14px;font-size:7px}
+  .step-arr{font-size:8px}
+
+  /* rows stack on mobile */
+  .row{flex-direction:column;gap:8px}
+  .col,.col2,.col3{min-width:unset;width:100%}
+
+  /* confidence */
+  .conf-section{flex-direction:column;gap:10px}
+  .conf-big{font-size:42px}
+
+  /* dashboard grid — 2 cols */
+  .dash-grid{grid-template-columns:repeat(2,1fr)}
+
+  /* chart labels shorter */
+  .chart-label{width:90px;font-size:9px}
+
+  /* reviewer grid — 2 cols */
+  .rev-grid{display:grid;grid-template-columns:1fr 1fr}
+  .rev-btn{font-size:9px;padding:8px 8px;justify-content:center;text-align:center}
+
+  /* verdict row stacks */
+  .verdict-row{flex-wrap:wrap}
+  .verdict-row .btn{flex:1;min-width:calc(50% - 4px);justify-content:center;text-align:center;padding:10px 8px;font-size:10px}
+
+  /* btn row */
+  .btn-row{flex-direction:column}
+  .btn-row .btn{width:100%;text-align:center;padding:12px;font-size:11px}
+
+  /* stream box */
+  .stream-box{font-size:10px;line-height:1.7}
+
+  /* chat */
+  .msg{max-width:95%}
+  .chat-inp{font-size:13px}
+  .chat-input-wrap{padding:8px 10px;padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+
+  /* cards */
+  .card{padding:10px}
+
+  /* tags hidden on mobile */
+  .tag{display:none}
+
+  /* watermark hidden */
+  .wm{display:none}
+
+  /* fields — bigger touch targets */
+  .sel{font-size:13px;padding:9px 8px}
+  .inp{font-size:13px}
+  .field{padding:8px 10px}
+  .lbl{font-size:9px;margin-bottom:4px}
+  .val{font-size:12px}
+
+  /* buttons bigger */
+  .btn{padding:10px 14px;font-size:11px}
+  .btn.sm{padding:6px 10px;font-size:10px}
+
+  /* confidence preview on rfq */
+  #preview-conf{font-size:36px}
+
+  /* conf screen side-by-side on mobile — stack it */
+  #p3 .row{flex-direction:column}
+
+  /* kg compare block */
+  .compare-block{flex-direction:column;gap:12px}
+  .compare-arrow{transform:rotate(90deg)}
+
+  /* screen hdr */
+  .screen-title{font-size:11px}
+  .screen-sub{display:none}
+}
 </style>
 </head>
 <body>
@@ -1239,6 +1365,24 @@ body::after{
 
 <div class="wm">BofA Global Markets · Structured Products · SAI v0.1 · Confidential</div>
 
+<!-- MOBILE BOTTOM NAV -->
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <button class="bn-item active" id="bn-rfq" onclick="showScreen('rfq');setBnActive('bn-rfq')">
+      <span class="bn-icon">◈</span><span>RFQ</span>
+    </button>
+    <button class="bn-item" id="bn-chat" onclick="showScreen('chat');setBnActive('bn-chat')">
+      <span class="bn-icon">◉</span><span>Assistant</span>
+    </button>
+    <button class="bn-item" id="bn-db" onclick="showScreen('db');setBnActive('bn-db')">
+      <span class="bn-icon">◫</span><span>Trades</span>
+    </button>
+    <button class="bn-item" id="bn-dash" onclick="showScreen('dash');setBnActive('bn-dash')">
+      <span class="bn-icon">◎</span><span>Dashboard</span>
+    </button>
+  </div>
+</nav>
+
 <script>
 // ═══════════════════════════════════════════════════════
 // STATE
@@ -1860,10 +2004,20 @@ function showScreen(id) {
   document.querySelectorAll('.tb-nav-item').forEach(function(n){n.classList.remove('active')});
   document.getElementById('screen-'+id).classList.add('active');
 
-  // Highlight nav
+  // Highlight top nav
   var navMap = {rfq:0,chat:1,db:2,dash:3};
   var items = document.querySelectorAll('.tb-nav-item');
   if(navMap[id] !== undefined) items[navMap[id]].classList.add('active');
+
+  // Sync bottom nav
+  var bnMap = {rfq:'bn-rfq',chat:'bn-chat',db:'bn-db',dash:'bn-dash'};
+  if(bnMap[id]) setBnActive(bnMap[id]);
+}
+
+function setBnActive(id) {
+  document.querySelectorAll('.bn-item').forEach(function(b){b.classList.remove('active')});
+  var el = document.getElementById(id);
+  if(el) el.classList.add('active');
 }
 
 function setSbActive(el) {
